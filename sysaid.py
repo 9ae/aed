@@ -33,12 +33,13 @@ class Toki:
 		self.timelog = {}
 
 	def inUnit(self,time_diff,unit):
+		sects = (time_diff.days * 24 * 60 * 60 + time_diff.seconds)
 		if unit=='micro':
-			return (time_diff.days * 24 * 60 * 60 + time_diff.seconds) * 10e6 + time_diff.microseconds
+			return sects * 10e6 + time_diff.microseconds
 		elif unit=='milli':
-			return (time_diff.days * 24 * 60 * 60 + time_diff.seconds) * 1000 + time_diff.microseconds / 1000.0
+			return sects * 1000 + time_diff.microseconds / 1000.0
 		else:
-			return (time_diff.days * 24 * 60 * 60 + time_diff.seconds)
+			return sects
 
 	def diff(self, since, record=None, unit='sec'):
 		time_diff = datetime.now() - since
