@@ -13,7 +13,7 @@ class Interval:
 	def	duration(self): pass
 	
 	@abstractproperty
-	def big_bro(self): pass
+	def prev(self): pass
 	
 	@abstractmethod
 	def at_begin(self): pass

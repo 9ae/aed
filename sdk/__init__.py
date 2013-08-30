@@ -1,4 +1,5 @@
 import lofty
+import janus
 import inspect
 
 class Paradigm(object):
@@ -9,6 +10,8 @@ class Paradigm(object):
         self.etypes = []
         self.itypes = []
         self.bind_action_listeners()
+        
+        self.tk = janus.Timekeeper(-3)
 
     def bind_action_listeners(self): pass
         
