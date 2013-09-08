@@ -1,0 +1,35 @@
+<Experiment paradigm="simple">
+<info>
+	<date>2013-09-09T09:00:00</date>
+	<name>Simple Test</name>
+</info>
+<trialDuration>10.0</trialDuration>
+<events>
+	<Restart id="0" name="restart trial">
+	</Restart>
+	<Reward id="1" name="reward duration">
+	<self name="valve" value="1" />
+	</Reward>
+</events>
+<intervals>
+	<Wait id="0" name="precursor">
+		<duration value="2.0" />
+	</Wait>
+	<Tone id="1" name="play tone">
+		<duration value="3.0" />
+		<eventChains></eventChains>
+	</Tone>
+	<Present id="2" name="reward interval">
+		<duration value="7.0" />
+		<eventChains>
+		<events_LeverPress>
+			<act id="1"></act>
+			<act id="0"></act>
+		</events_LeverPress>
+		<events_end>
+			<act id="0"></act>
+		</events_end>
+		</eventChains>
+	</Present>
+</intervals>
+</Experiment>

@@ -5,6 +5,7 @@ Created on Aug 29, 2013
 '''
 from datetime import datetime
 
+""" initalized at the start of an experiment """
 class Timekeeper(object):
 	def __init__(self,unit):
 		self.unit = unit
@@ -31,5 +32,5 @@ class Timekeeper(object):
 		return self.diffSince(self.startTime, record=record)
 
 	def get(self,recordName):
-			return self.timelog[recordName]
+		return self.timelog[recordName]
 		
