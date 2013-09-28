@@ -1,4 +1,4 @@
-<Experiment paradigm="simple">
+<Experiment paradigm="Mickey">
 <info>
 	<date>2013-09-09T09:00:00</date>
 	<name>Simple Test</name>
@@ -22,13 +22,10 @@
 	<Present id="2" name="reward interval">
 		<duration value="7.0" />
 		<eventChains>
-		<events_LeverPress>
-			<act id="1"></act>
-			<act id="0"></act>
-		</events_LeverPress>
-		<events_end>
-			<act id="0"></act>
-		</events_end>
+			<actionEvents on="LeverPress">
+				<event id="1" />
+				<event id="0" />
+			</actionEvents>
 		</eventChains>
 	</Present>
 </intervals>
