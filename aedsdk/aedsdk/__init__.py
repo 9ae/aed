@@ -1,7 +1,6 @@
 import inspect
 from abc import ABCMeta, abstractmethod, abstractproperty
 
-import janus
 import exp
 
 class Interval:
@@ -90,10 +89,9 @@ class Paradigm(object):
 		self.atypes = []
 		self.etypes = []
 		self.itypes = []
-		
+		self.exp = None
 		self.sort_classes()
-		
-		self.tk = janus.Timekeeper(-3)
+		self.register_actions()
 
 	"""
 	performed at the begining of an paradigm
@@ -135,6 +133,9 @@ class Paradigm(object):
 							else:
 									good = False
 			return good
+	
+	def set_experiment(self, exp):
+		self.exp = exp
 	
 	def new_experiment(self):
 		return exp.Experiment(self)

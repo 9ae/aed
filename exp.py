@@ -6,16 +6,8 @@ Created on Sep 7, 2013
 from xml.etree import ElementTree as elle
 
 import conf
-'''
-from sys import path
-path.append(conf.setting['program_path'])
+import janus
 
-def from_import(name):
-	m = __import__(name)
-	for n in name.split(".")[1:]:
-		m = getattr(m, n)
-	return m
-'''
 def import_mod_file(filename):
 	import os
 	import sys
@@ -32,15 +24,44 @@ def import_mod_file(filename):
 
 class Experiment(object):
 	def __init__(self):
-		self.paradigm = None
 		self.intervals = []
 		self.events = []	
 		self.name = ''
 		self.created_on = ''
 		self.trial_duration = 0
+		self.tk = janus.Timekeeper(-3)
+		
+		self.interval_pointer = 0
+	
+	def new_trial(self):
+		self.interval_pointer = 0
+		self.tk.new_trial()
+		
+	def trials_count(self):
+		return len(self.tk.timelog)
+	
+	def go(self):
+		# check time
+		trial_time = self.tk.trial_diff()
+		current_interval = self.intervals[self.interval_pointer]
+		if trial_time>current_interval.duration:
+			# go to next interval
+			current_interval.at_end()
+			self.interval_pointer = self.interval_pointer + 1
+			if self.interval_pointer >= len(self.intervals):
+				# is at last interval
+				self.new_trial()
+				return
+			# start new interval
+			next_interval = self.intervals[self.interval_pointer]
+			next_interval.at_begin()
+			next_interval.meanwhile()
+		else:
+			current_interval.meanwhile()
+			
 
 	def print_details(self):
-		print '%s : %s'%(self.name,self.paradigm)
+		print '%s '%(self.name)
 		print '\t created on: %s'%self.created_on
 		
 		print '\n Events'
@@ -58,11 +79,12 @@ class Experiment(object):
 		read_success = True
 		
 		# set paradigm
+		paradigm = None
 		paradigm_mod_name = root.get('paradigm')
 		parad = import_mod_file(conf.setting['paradigms_path']+'/'+paradigm_mod_name+'.py')
 		if parad!=None:
-			self.paradigm = eval('parad.'+paradigm_mod_name+'()')
-			self.paradigm.bind_action_listeners()
+			paradigm = eval('parad.'+paradigm_mod_name+'()')
+			paradigm.set_experiment(self)
 		else:
 			raise NameError('failed to import '+paradigm_mod_name)
 			return False
@@ -77,7 +99,7 @@ class Experiment(object):
 		# load events
 		events_list = root.findall('events/*')
 		for ev in events_list:
-			ev_obj = self.paradigm.instantiate_name(ev.tag)
+			ev_obj = paradigm.instantiate_name(ev.tag)
 			ev_index = int(ev.get('id'))
 			ev_props = ev.findall('self')
 			ev_obj.name = ev.get('name')
@@ -90,7 +112,7 @@ class Experiment(object):
 		for iv in intervals_list:
 			iv_index = int(iv.get('id'))
 			iv_duration = iv.find('duration').get('value')
-			iv_obj = self.paradigm.instantiate_name(iv.tag)
+			iv_obj = paradigm.instantiate_name(iv.tag)
 			iv_obj.duration = float(iv_duration)
 			iv_obj.name = iv.get('name')
 			
