@@ -17,8 +17,9 @@ class Executioner(Thread):
 	
 	def run(self,exp):
 		self.exp = exp
+		self.exp.new_trial()
 		while not(self.stop_flag):
-			self.exp.go()
+			self.exp.loop()
 			#just for testing
 			if self.exp.trials_count()>3:
 				self.stop()

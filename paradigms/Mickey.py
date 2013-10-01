@@ -1,6 +1,8 @@
 import aedsdk
 import time
 
+import random
+
 class Mickey(aedsdk.Paradigm):
 	
 	def __init__(self):
@@ -11,7 +13,8 @@ class Mickey(aedsdk.Paradigm):
 			pass
 		
 		def detect(self):
-			print 'waiting for lever press'
+			if random.randint(1,1e6)==3:
+				self.respond()
 		
 		def respond(self):
 			print 'do what on lever press'
@@ -39,7 +42,7 @@ class Mickey(aedsdk.Paradigm):
 			print 'restart trial @ '%self.exp.tk.diff()
 	
 	class Wait(aedsdk.Interval):   
-		def __init__(self, duration=0.0):
+		def __init__(self,  duration=0.0):
 			aedsdk.Interval.__init__(self, duration)
 			
 		def on_LeverPress(self):
@@ -47,29 +50,46 @@ class Mickey(aedsdk.Paradigm):
 			for act in self.events_LeverPress:
 				act()
 		
+		def at_begin(self):
+			aedsdk.Interval.at_begin(self)
+			print 'wait start @ %f'%self.exp.tk.diff()
+			
+		def at_end(self):
+			aedsdk.Interval.at_end(self)
+			print 'wait end @ %f'%self.exp.tk.diff()
+		
 		def meanwhile(self):
 			self.a_LeverPress.detect()
 			
 	class Tone(aedsdk.Interval):
-		def __init__(self,duration=0.0):
+		def __init__(self, duration=0.0):
 			aedsdk.Interval.__init__(self, duration)
 		
 		def at_begin(self):
 			aedsdk.Interval.at_begin(self)
-			print 'tone play start @ '%self.exp.tk.diff()
+			print 'tone play start @ %f'%self.exp.tk.diff()
 		
 		def at_end(self):
 			aedsdk.Interval.at_end(self)
-			print 'tone play end @ '%self.exp.tk.diff()
+			print 'tone play end @ %f'%self.exp.tk.diff()
 			
 		def meanwhile(self): pass
 	
 	class Present(aedsdk.Interval):
-		def __init__(self,duration=0.0):
+		def __init__(self, duration=0.0):
 			aedsdk.Interval.__init__(self, duration)
 		
+		def at_begin(self):
+			aedsdk.Interval.at_begin(self)
+			print 'reward chance start @ %f'%self.exp.tk.diff()
+		
+		def at_end(self):
+			aedsdk.Interval.at_end(self)
+			print 'reward chance end @ %f'%self.exp.tk.diff()
+		
+		
 		def on_LeverPress(self):
-			print 'give reward :) @ '%self.exp.tk.diff()
+			print 'give reward :) @ %f'%self.exp.tk.diff()
 			for act in self.events_LeverPress:
 				act()
 				
@@ -77,20 +97,20 @@ class Mickey(aedsdk.Paradigm):
 			self.a_LeverPress.detect()
 	
 	class Refrain(aedsdk.Interval):
-		def __init__(self,duration=0.0):
+		def __init__(self, duration=0.0):
 			aedsdk.Interval.__init__(self, duration)
 			self.reward = True
 		
 		def at_end(self):
 			if self.reward:
 				aedsdk.Interval.at_end(self)
-				print 'reward given  @ '%self.exp.tk.diff()
+				print 'reward given  @ %f'%self.exp.tk.diff()
 			else:
-				print 'reward not given  @ '%self.exp.tk.diff()
+				print 'reward not given  @ %f'%self.exp.tk.diff()
 		
 		def on_LeverPress(self):
 			self.reward = False
-			print 'oops pressed lever no reward at the end :(  @ '%self.exp.tk.diff()
+			print 'oops pressed lever no reward at the end :(  @ %f'%self.exp.tk.diff()
 			for act in self.events_LeverPress:
 				act()
 				

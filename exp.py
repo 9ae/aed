@@ -32,18 +32,26 @@ class Experiment(object):
 		self.tk = janus.Timekeeper(-3)
 		
 		self.interval_pointer = 0
+		self.is_new_trial = False
 	
 	def new_trial(self):
 		self.interval_pointer = 0
 		self.tk.new_trial()
+		self.is_new_trial = True
 		
 	def trials_count(self):
 		return len(self.tk.timelog)
 	
-	def go(self):
+	def loop(self):
 		# check time
+		
 		trial_time = self.tk.trial_diff()
 		current_interval = self.intervals[self.interval_pointer]
+		
+		if self.is_new_trial:
+			current_interval.at_begin()
+			self.is_new_trial = False
+		
 		if trial_time>current_interval.duration:
 			# go to next interval
 			current_interval.at_end()
@@ -103,6 +111,7 @@ class Experiment(object):
 			ev_index = int(ev.get('id'))
 			ev_props = ev.findall('self')
 			ev_obj.name = ev.get('name')
+			ev_obj.set_experiment(self)
 			for p in ev_props:
 				ev_obj.set_prop(p.get('name'),p.get('value'))
 			self.events.insert(ev_index, ev_obj)
@@ -115,7 +124,7 @@ class Experiment(object):
 			iv_obj = paradigm.instantiate_name(iv.tag)
 			iv_obj.duration = float(iv_duration)
 			iv_obj.name = iv.get('name')
-			
+			iv_obj.set_experiment(self)
 			iv_chains = iv.findall('eventChains/*')
 			for chain in iv_chains:
 				if chain.tag=='timeEvents':
@@ -125,19 +134,17 @@ class Experiment(object):
 					call_name = 'events_'+sim_act
 					events_chain = []
 					if hasattr(iv_obj,call_name):
-						print 'found '+call_name
 						events_chain = iv_obj.__getattr__(call_name)
 					for evee in chain.findall('event'):
 						event_id = int(evee.get('id'))
 						try:
 							event_ref = self.events[event_id]
 							events_chain.append(event_ref)
-							print 'found event %d'%event_id
 						except LookupError:
 							print '%d not found'%event_id
 							read_success = False
 					iv_obj.__setattr__(call_name,events_chain)
-					print events_chain
+			iv_obj.register_actions(paradigm)
 			self.intervals.insert(iv_index,iv_obj)
 		
 		return read_success

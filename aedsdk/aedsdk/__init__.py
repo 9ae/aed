@@ -52,6 +52,14 @@ class Interval:
 				result[mys] = getattr(self,mys)
 		return result
 	
+	def register_actions(self,paradigm):
+		for act_class in paradigm.atypes:
+			action = act_class()
+			self.__setattr__('a_'+act_class.__name__,action)
+	
+	def set_experiment(self, exp):
+		self.exp = exp
+	
 	def __str__(self):
 		basic = self.name+" { duration:"+str(self.duration)
 		return basic+" \n event chains: "+str(self.my_events())+" }"
@@ -70,7 +78,9 @@ class Action:
 
 	def set_prop(self,name,val):
 		pass
-	
+
+	def set_experiment(self, exp):
+		self.exp = exp	
 		
 class Event:
 	__metaclass__ = ABCMeta
@@ -84,6 +94,9 @@ class Event:
 	def set_prop(self,name,val):
 		pass
 
+	def set_experiment(self, exp):
+		self.exp = exp
+
 class Paradigm(object):
 	def __init__(self):
 		self.atypes = []
@@ -91,7 +104,6 @@ class Paradigm(object):
 		self.itypes = []
 		self.exp = None
 		self.sort_classes()
-		self.register_actions()
 
 	"""
 	performed at the begining of an paradigm
@@ -111,12 +123,6 @@ class Paradigm(object):
 					# print act_name[0]+' not registered in '+iclass.__name__
 		# > for each action
 		# look for on_action
-
-	
-	def register_actions(self):
-		for act_class in self.atypes:
-			action = act_class()
-			self.__setattr__('a_'+act_class.__name__,action)
 			
 	def sort_classes(self):
 			mystuff = self.__class__.__dict__
