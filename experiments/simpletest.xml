@@ -14,6 +14,9 @@
 <intervals>
 	<Wait id="0" name="precursor">
 		<duration value="2.0" />
+		<eventChains>
+			<actionEvents on="LeverPress"></actionEvents>
+		</eventChains>
 	</Wait>
 	<Tone id="1" name="play tone">
 		<duration value="3.0" />

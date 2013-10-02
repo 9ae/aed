@@ -13,11 +13,10 @@ class Mickey(aedsdk.Paradigm):
 			pass
 		
 		def detect(self):
-			if random.randint(1,1e6)==3:
-				self.respond()
-		
-		def respond(self):
-			print 'do what on lever press'
+			if random.randint(1,1e4)==3:
+				return True
+			else:
+				return False
 	
 	class Reward(aedsdk.Event):
 		def __init__(self):
@@ -39,7 +38,7 @@ class Mickey(aedsdk.Paradigm):
 		
 		def perform(self):
 			self.exp.new_trial()
-			print 'restart trial @ '%self.exp.tk.diff()
+			print 'restart trial @ %f'%self.exp.tk.diff()
 	
 	class Wait(aedsdk.Interval):   
 		def __init__(self,  duration=0.0):
@@ -48,7 +47,7 @@ class Mickey(aedsdk.Paradigm):
 		def on_LeverPress(self):
 			print 'lever pressed'
 			for act in self.events_LeverPress:
-				act()
+				act.perform()
 		
 		def at_begin(self):
 			aedsdk.Interval.at_begin(self)
@@ -59,7 +58,8 @@ class Mickey(aedsdk.Paradigm):
 			print 'wait end @ %f'%self.exp.tk.diff()
 		
 		def meanwhile(self):
-			self.a_LeverPress.detect()
+			if self.a_LeverPress.detect():
+				self.on_LeverPress()
 			
 	class Tone(aedsdk.Interval):
 		def __init__(self, duration=0.0):
@@ -91,10 +91,11 @@ class Mickey(aedsdk.Paradigm):
 		def on_LeverPress(self):
 			print 'give reward :) @ %f'%self.exp.tk.diff()
 			for act in self.events_LeverPress:
-				act()
+				act.perform()
 				
 		def meanwhile(self):
-			self.a_LeverPress.detect()
+			if self.a_LeverPress.detect():
+				self.on_LeverPress()
 	
 	class Refrain(aedsdk.Interval):
 		def __init__(self, duration=0.0):
@@ -112,22 +113,8 @@ class Mickey(aedsdk.Paradigm):
 			self.reward = False
 			print 'oops pressed lever no reward at the end :(  @ %f'%self.exp.tk.diff()
 			for act in self.events_LeverPress:
-				act()
+				act.perform()
 				
 		def meanwhile(self):
-			self.a_LeverPress.detect()
-
-"""
-	def test(self):
-		self.matte = self.Wait(2.0)
-		self.matte.at_begin()
-		time.sleep(self.matte.duration)
-		self.matte.at_end()
-		#self.print_classes()
-		self.bind_action_listeners()
-		self.print_classes()
-			
-mouse = Mickey()
-exp = aedsdk.exp.Experiment(mouse)
-print exp._LeverPress
-"""
+			if self.a_LeverPress.detect():
+				self.on_LeverPress()

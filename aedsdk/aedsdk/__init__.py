@@ -69,12 +69,6 @@ class Action:
 	
 	@abstractmethod
 	def detect(self): pass
-	
-	@abstractmethod
-	def respond(self): pass
-	
-	def invoke(self):
-		self.respond()
 
 	def set_prop(self,name,val):
 		pass
