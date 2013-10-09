@@ -6,5 +6,7 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('',
 	url(r'^tests/',include('tests.urls')),
+	url(r'^perform/',include('perform.urls')),
+	url(r'^edit/',include('edit.urls')),
 	#url(r'^admin/', include(admin.site.urls)),
 )
